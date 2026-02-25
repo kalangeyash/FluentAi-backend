@@ -64,7 +64,14 @@ async function createArticle({
   const db = getDb();
   const [result] = await db.execute(
     'INSERT INTO articles (title, summary, content, category, tags, author_id) VALUES (?, ?, ?, ?, ?, ?)',
-    [title, summary, content, category, tags, authorId],
+    [
+      title,
+      summary ?? null,
+      content,
+      category ?? null,
+      tags ?? null,
+      authorId,
+    ],
   );
 
   return getArticleById(result.insertId);
@@ -80,7 +87,14 @@ async function updateArticle(id, {
   const db = getDb();
   await db.execute(
     'UPDATE articles SET title = ?, summary = ?, content = ?, category = ?, tags = ? WHERE id = ?',
-    [title, summary, content, category, tags, id],
+    [
+      title,
+      summary ?? null,
+      content,
+      category ?? null,
+      tags ?? null,
+      id,
+    ],
   );
   return getArticleById(id);
 }
