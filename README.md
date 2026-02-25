@@ -2,6 +2,384 @@
 
 Minimal, production-ready Express.js backend for a Knowledge Sharing Platform using MySQL, JWT auth, and a clean, layered structure.
 
+Here is your content formatted cleanly in proper Markdown for README:
+
+⸻
+
+Knowledge Sharing Platform – Backend
+
+This project is a Node.js + Express backend for a Knowledge Sharing Platform, using:
+	•	MySQL (mysql2/promise) for persistence
+	•	JWT for authentication
+	•	dotenv for environment configuration
+	•	Centralized error handling and validation
+	•	Clean layered structure: config, controllers, routes, middleware, services, models, utils, validators
+
+⸻
+
+Project Structure
+
+package.json
+README.md
+.env / .env.example
+src/
+  ├── server.js
+  ├── app.js
+  ├── config/
+  ├── controllers/
+  ├── middleware/
+  ├── models/
+  ├── routes/
+  ├── services/
+  ├── utils/
+  └── validators/
+
+
+⸻
+
+package.json
+
+Scripts
+	•	npm run dev – Start server with nodemon (NODE_ENV=development)
+	•	npm start – Start server in production (NODE_ENV=production)
+	•	npm run lint – Run ESLint on src
+
+Main Dependencies
+	•	express
+	•	mysql2
+	•	jsonwebtoken
+	•	bcrypt
+	•	dotenv
+	•	helmet
+	•	cors
+	•	joi
+	•	morgan
+	•	openai
+
+⸻
+
+Environment Configuration
+
+Server
+	•	NODE_ENV
+	•	PORT
+
+Database
+	•	DB_HOST
+	•	DB_PORT
+	•	DB_USER
+	•	DB_PASSWORD
+	•	DB_NAME
+
+JWT
+	•	JWT_SECRET
+	•	JWT_EXPIRES_IN
+
+OpenAI
+	•	OPENAI_API_KEY
+
+⸻
+
+Runtime Entry Points
+
+src/server.js
+	•	Creates HTTP server
+	•	Loads app from createApp()
+	•	Listens on configured PORT
+	•	Catches startup errors and exits if initialization fails
+
+src/app.js
+
+Responsible for:
+	•	Security middleware: helmet, cors
+	•	JSON body parsing: express.json()
+	•	Logging in development: morgan('dev')
+	•	Registering all routes under /api
+	•	notFoundHandler for unmatched routes
+	•	errorHandler for centralized errors
+	•	Ensures initDb() runs before handling requests
+
+⸻
+
+Configuration Layer (src/config)
+
+env.js
+	•	Loads .env using dotenv
+	•	Exposes centralized config object:
+	•	nodeEnv, port
+	•	db: { host, port, user, password, database }
+	•	jwt: { secret, expiresIn }
+	•	openai: { apiKey }
+
+db.js
+	•	Creates MySQL connection pool using mysql2/promise
+	•	initDb():
+	•	Creates pool
+	•	Runs SELECT 1 connectivity check
+	•	getDb():
+	•	Returns pool
+	•	Throws error if DB not initialized
+
+⸻
+
+Middleware (src/middleware)
+
+auth.middleware.js
+	•	Reads Authorization: Bearer <token>
+	•	Verifies JWT
+	•	Attaches req.user = { id, email }
+	•	Returns 401 if invalid or missing token
+
+validate.middleware.js
+	•	Accepts Joi schema (body, params, query)
+	•	On validation error:
+	•	Returns 400
+	•	Message: Validation error
+	•	Includes details
+	•	On success:
+	•	Replaces request values with sanitized data
+
+error.middleware.js
+
+notFoundHandler
+	•	Handles unmatched routes → 404
+
+errorHandler
+	•	Central error handler
+	•	Uses err.statusCode or defaults to 500
+	•	Returns:
+
+{ message, stack?, details? }
+
+
+	•	Stack shown only in development
+
+⸻
+
+Models (src/models)
+
+user.model.js
+
+Functions:
+	•	createUser({ name, email, passwordHash })
+	•	findUserByEmail(email)
+	•	findUserById(id)
+
+article.model.js
+
+Functions:
+	•	listArticles({ search, category, limit, offset })
+	•	Dynamic WHERE
+	•	Parameterized LIKE queries
+	•	Returns { items, total }
+	•	getArticleById(id)
+	•	createArticle(...)
+	•	updateArticle(...)
+	•	deleteArticle(id)
+
+⸻
+
+Services (src/services)
+
+auth.service.js
+
+register()
+	•	Check existing email
+	•	Hash password
+	•	Create user
+	•	Generate JWT
+	•	Return { user, token }
+
+login()
+	•	Verify credentials
+	•	Return { user, token }
+	•	401 on invalid login
+
+⸻
+
+article.service.js
+
+Business Logic + Authorization
+	•	list() → pagination + filters
+	•	getById() → 404 if not found
+	•	create()
+	•	update():
+	•	404 if not found
+	•	403 if not author
+	•	remove():
+	•	404 if not found
+	•	403 if not author
+
+⸻
+
+token.service.js
+	•	generateToken(user)
+	•	verifyToken(token)
+
+⸻
+
+ai.service.js
+
+Uses OpenAI SDK (API key from environment)
+
+Functions:
+	•	improveContent(text)
+	•	generateSummary(text)
+	•	suggestTags(text)
+
+If API key missing → 500 error.
+
+⸻
+
+Controllers (src/controllers)
+
+auth.controller.js
+	•	register → 201 { user, token }
+	•	login → { user, token }
+
+article.controller.js
+	•	list → { items, total, page, limit }
+	•	getById
+	•	create (auth required)
+	•	update (author only)
+	•	remove → 204
+
+ai.controller.js
+	•	POST /ai/improve → { improved }
+	•	POST /ai/summary → { summary }
+	•	POST /ai/tags → { tags }
+
+All controllers use centralized error handling.
+
+⸻
+
+Validators (src/validators)
+	•	auth.validators.js
+	•	article.validators.js
+	•	ai.validators.js
+
+Using Joi for:
+	•	Request body validation
+	•	Query validation
+	•	Parameter validation
+
+⸻
+
+Routes (src/routes)
+
+All routes mounted under /api
+
+Auth
+
+POST /api/auth/register
+POST /api/auth/login
+
+Articles
+
+GET    /api/articles
+GET    /api/articles/:id
+POST   /api/articles
+PUT    /api/articles/:id
+DELETE /api/articles/:id
+
+AI
+
+POST /api/ai/improve
+POST /api/ai/summary
+POST /api/ai/tags
+
+
+⸻
+
+Utilities (src/utils)
+
+password.js
+	•	hashPassword(plain)
+	•	comparePassword(plain, hash)
+	•	Uses SALT_ROUNDS = 10
+
+⸻
+
+Database Schema
+
+users
+	•	id (PK)
+	•	username (indexed)
+	•	email (unique)
+	•	password_hash
+	•	created_at
+
+Indexes:
+	•	uq_users_email
+	•	idx_users_username
+	•	idx_users_created_at
+
+⸻
+
+articles
+	•	id (PK)
+	•	title
+	•	summary
+	•	content (LONGTEXT)
+	•	category (indexed)
+	•	tags
+	•	author_id (FK → users.id)
+	•	created_at
+	•	updated_at
+
+Indexes:
+	•	idx_articles_category
+	•	idx_articles_author_id
+	•	idx_articles_created_at
+	•	FULLTEXT ft_articles_search
+
+⸻
+
+Typical Flows
+
+Authentication
+
+POST /api/auth/register
+POST /api/auth/login
+
+→ Validate
+→ Service
+→ DB
+→ JWT
+
+⸻
+
+Secure Article CRUD
+	•	JWT in Authorization header
+	•	Middleware sets req.user
+	•	Services enforce author-only update/delete
+
+⸻
+
+Search & Filter
+
+GET /api/articles?search=react&category=AI&page=2&limit=20
+
+	•	Safe parameterized queries
+	•	Pagination supported
+
+⸻
+
+AI Enhancements
+
+POST /api/ai/improve
+POST /api/ai/summary
+POST /api/ai/tags
+
+Returns minimal structured JSON:
+
+{ "improved": "..." }
+{ "summary": "..." }
+{ "tags": "react, backend, ai" }
+
+
+⸻
+
 ### Folder structure
 
 - `src/config` – environment + database config
