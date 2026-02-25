@@ -36,21 +36,31 @@ USE fluentai_knowledge;
 
 CREATE TABLE users (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  email VARCHAR(255) NOT NULL UNIQUE,
+  username VARCHAR(100) NOT NULL,
+  email VARCHAR(255) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT uq_users_email UNIQUE (email),
+  INDEX idx_users_username (username),
+  INDEX idx_users_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE articles (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(200) NOT NULL,
-  content TEXT NOT NULL,
+  summary VARCHAR(500) DEFAULT NULL,
+  content LONGTEXT NOT NULL,
+  category VARCHAR(100) DEFAULT NULL,
+  tags VARCHAR(500) DEFAULT NULL,
   author_id INT UNSIGNED NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_articles_users FOREIGN KEY (author_id) REFERENCES users(id)
-);
+  CONSTRAINT fk_articles_users FOREIGN KEY (author_id) REFERENCES users(id),
+  INDEX idx_articles_category (category),
+  INDEX idx_articles_author_id (author_id),
+  INDEX idx_articles_created_at (created_at),
+  FULLTEXT INDEX ft_articles_search (title, summary, content, tags)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
 4. Run the server:
@@ -63,8 +73,11 @@ npm run dev
 
 - `POST /api/auth/register` – register user, returns JWT
 - `POST /api/auth/login` – login user, returns JWT
-- `GET /api/articles` – list articles
+- `GET /api/articles` – list articles (supports `search`, `category`, `page`, `limit`)
 - `GET /api/articles/:id` – get single article
 - `POST /api/articles` – create article (requires `Authorization: Bearer <token>`)
-- `PUT /api/articles/:id` – update article (auth required)
-- `DELETE /api/articles/:id` – delete article (auth required)
+- `PUT /api/articles/:id` – update article (author only)
+- `DELETE /api/articles/:id` – delete article (author only)
+- `POST /api/ai/improve` – improve article content (auth required)
+- `POST /api/ai/summary` – generate summary (auth required)
+- `POST /api/ai/tags` – suggest tags (auth required)
