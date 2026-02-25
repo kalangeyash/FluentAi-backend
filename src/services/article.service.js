@@ -1,5 +1,10 @@
 const articleModel = require('../models/article.model');
 
+// Find similar articles by tags
+async function findSimilar({ tags, excludeId, limit }) {
+  return articleModel.findSimilarArticles({ tags, excludeId, limit });
+}
+
 async function list({
   search,
   category,
@@ -101,4 +106,5 @@ module.exports = {
   create,
   update,
   remove,
+  findSimilar,
 };

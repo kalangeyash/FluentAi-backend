@@ -1,5 +1,18 @@
 const articleService = require('../services/article.service');
 
+// Suggest similar articles by tags
+async function suggestSimilar(req, res, next) {
+  try {
+    const { id } = req.params;
+    const article = await articleService.getById(id);
+    if (!article) return res.status(404).json({ message: 'Article not found' });
+    const similar = await articleService.findSimilar({ tags: article.tags, excludeId: id, limit: 5 });
+    res.json({ items: similar });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function list(req, res, next) {
   try {
     const {
@@ -86,4 +99,5 @@ module.exports = {
   create,
   update,
   remove,
+  suggestSimilar,
 };
