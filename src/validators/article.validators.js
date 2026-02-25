@@ -3,7 +3,7 @@ const Joi = require('joi');
 const createArticleSchema = Joi.object({
   body: Joi.object({
     title: Joi.string().min(3).max(200).required(),
-    summary: Joi.string().max(500).allow('', null),
+    summary: Joi.string().max(1000).allow('', null),
     content: Joi.string().min(10).required(),
     category: Joi.string().max(100).allow('', null),
     tags: Joi.string().max(500).allow('', null),
@@ -15,7 +15,7 @@ const createArticleSchema = Joi.object({
 const updateArticleSchema = Joi.object({
   body: Joi.object({
     title: Joi.string().min(3).max(200).optional(),
-    summary: Joi.string().max(500).allow('', null),
+    summary: Joi.string().max(1000).allow('', null),
     content: Joi.string().min(10).optional(),
     category: Joi.string().max(100).allow('', null),
     tags: Joi.string().max(500).allow('', null),

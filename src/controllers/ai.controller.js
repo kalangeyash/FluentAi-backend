@@ -31,9 +31,25 @@ async function tags(req, res, next) {
   }
 }
 
+async function applyPrompt(req, res, next) {
+  try {
+    const { text, prompt } = req.body;
+    if (!prompt || !prompt.trim()) {
+      const error = new Error('Prompt is required');
+      error.statusCode = 400;
+      throw error;
+    }
+    const modified = await aiService.applyCustomPrompt(text, prompt);
+    res.json({ modified });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   improve,
   summary,
   tags,
+  applyPrompt,
 };
 
