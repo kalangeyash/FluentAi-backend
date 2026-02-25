@@ -47,7 +47,7 @@ async function listArticles({ search, category, limit, offset }) {
 async function getArticleById(id) {
   const db = getDb();
   const [rows] = await db.execute(
-    'SELECT id, title, content, author_id, created_at, updated_at FROM articles WHERE id = ? LIMIT 1',
+    'SELECT id, title, summary, content, category, tags, author_id, created_at, updated_at FROM articles WHERE id = ? LIMIT 1',
     [id],
   );
   return rows[0] || null;
