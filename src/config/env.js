@@ -21,6 +21,10 @@ const env = {
   openai: {
     apiKey: process.env.OPENAI_API_KEY,
   },
+  cors: {
+    // Comma-separated list of allowed origins, e.g. http://localhost:3000,http://localhost:5173
+    origin: process.env.CORS_ORIGIN || '*',
+  },
 };
 
 module.exports = env;

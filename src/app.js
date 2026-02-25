@@ -16,7 +16,21 @@ async function createApp() {
 
   // Basic hardening & cross-origin support
   app.use(helmet());
-  app.use(cors());
+
+  // CORS: configurable origins + headers, supports Authorization and credentials
+  const corsOrigins = env.cors.origin === '*'
+    ? true
+    : env.cors.origin.split(',').map((o) => o.trim());
+
+  const corsOptions = {
+    origin: corsOrigins,
+    credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  };
+
+  app.use(cors(corsOptions));
+  app.options('*', cors(corsOptions));
 
   // Parse JSON request bodies
   app.use(express.json());
