@@ -5,6 +5,7 @@
 Check out the full project walkthrough and usage demo here:
 
 ➡️ Demo Video — FluentAI Knowledge Sharing Platform￼
+https://drive.google.com/file/d/19LudBL6Mp0PR9HXD2ifWHpSAYa3O5Uv_/view?usp=sharing
 A production-ready Express.js backend for a modern AI-powered knowledge sharing and content creation platform. Features JWT authentication, MySQL database integration, AI-powered content assistance, and comprehensive error handling.
 
 ## 📋 Table of Contents
