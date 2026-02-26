@@ -15,10 +15,10 @@ const router = express.Router();
 
 // Knowledge articles endpoints with auth + validation
 router.get('/', validate(listArticleSchema), articleController.list);
-router.get('/:id', validate(getArticleSchema), articleController.getById);
 router.post('/', auth, validate(createArticleSchema), articleController.create);
-router.put('/:id', auth, validate(updateArticleSchema), articleController.update);
 router.get('/:id/similar', articleController.suggestSimilar);
+router.get('/:id', validate(getArticleSchema), articleController.getById);
+router.put('/:id', auth, validate(updateArticleSchema), articleController.update);
 router.delete('/:id', auth, articleController.remove);
 
 module.exports = router;

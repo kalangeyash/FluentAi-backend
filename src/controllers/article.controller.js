@@ -20,14 +20,17 @@ async function list(req, res, next) {
       category,
       page,
       limit,
+      author,
     } = req.query;
 
     const pageNumber = page ? Number(page) : undefined;
     const pageSize = limit ? Number(limit) : undefined;
+    const authorId = author ? Number(author) : undefined;
 
     const { items, total } = await articleService.list({
       search,
       category,
+      authorId,
       page: pageNumber,
       limit: pageSize,
     });

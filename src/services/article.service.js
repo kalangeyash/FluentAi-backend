@@ -8,6 +8,7 @@ async function findSimilar({ tags, excludeId, limit }) {
 async function list({
   search,
   category,
+  authorId,
   page,
   limit,
 }) {
@@ -18,6 +19,7 @@ async function list({
   return articleModel.listArticles({
     search,
     category,
+    authorId,
     limit: pageSize,
     offset,
   });

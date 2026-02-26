@@ -28,8 +28,8 @@ async function findSimilarArticles({ tags, excludeId, limit = 5 }) {
   return rows;
 }
 
-// Supports optional full-text-ish search, category filter, and pagination
-async function listArticles({ search, category, limit, offset }) {
+// Supports optional full-text-ish search, category filter, author filter, and pagination
+async function listArticles({ search, category, authorId, limit, offset }) {
   const db = getDb();
 
   const conditions = [];
@@ -45,6 +45,11 @@ async function listArticles({ search, category, limit, offset }) {
   if (category) {
     conditions.push('category = ?');
     params.push(category);
+  }
+
+  if (authorId) {
+    conditions.push('author_id = ?');
+    params.push(authorId);
   }
 
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
