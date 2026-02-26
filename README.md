@@ -1,5 +1,10 @@
 # FluentAI Backend - Comprehensive Documentation
 
+📹 Demo of the Project
+
+Check out the full project walkthrough and usage demo here:
+
+➡️ Demo Video — FluentAI Knowledge Sharing Platform￼
 A production-ready Express.js backend for a modern AI-powered knowledge sharing and content creation platform. Features JWT authentication, MySQL database integration, AI-powered content assistance, and comprehensive error handling.
 
 ## 📋 Table of Contents
